@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AgriCircularToken DApp</title>
+  <link rel="icon" sizes="16x16" href="ACT_icon_small.png" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" type="text/css" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <button class="title-button" onclick="showSection('intro')">
+        <div class="logo-container">
+          <i class="fas fa-leaf logo-icon"></i>
+          <h1>AgriCircularToken</h1>
+        </div>
+      </button>
+    </div>
+  </header>
+
+  <nav>
+    <div class="nav-container">
+      <div class="wallet-container">
+        <button class="wallet-btn" onclick="connectWallet()">
+          <i class="fas fa-wallet"></i>
+          <span id="walletButtonText">Connetti Wallet</span>
+          <span id="walletStatusIndicator" class="status-indicator"></span>
+        </button>
+        <div id="walletAddress" class="wallet-address"></div>
+      </div>
+      <div class="nav-buttons">
+        <button onclick="showSection('dashboard')">
+          <i class="fas fa-tachometer-alt"></i> Dashboard
+        </button>
+        <button onclick="showSection('attivita')">
+          <i class="fas fa-tasks"></i> Registra Attività
+        </button>
+        <button onclick="showSection('badge')">
+          <i class="fas fa-award"></i> Badge
+        </button>
+        <button onclick="showSection('corsi')">
+          <i class="fas fa-graduation-cap"></i> Corsi informativi
+        </button>
+        <button onclick="showSection('progetti')">
+          <i class="fas fa-hand-holding-heart"></i> Progetti
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <section id="intro" class="hero-section">
+      <h2>Benvenuto in AgriCircularToken!</h2>
+      <p>Questa DApp ti permette di guadagnare token ACT registrando pratiche sostenibili e di spenderli per ottenere badge, corsi e contribuire a progetti ecologici.</p>
+      <div class="cta-buttons">
+        <button class="cta-button" onclick="showSection('attivita')">
+          <i class="fas fa-plus-circle"></i> Inizia a guadagnare ACT
+        </button>
+      </div>
+    </section>
+
+    <section id="badge" style="display: none;" class="card-section">
+      <button style="display: none;" id="createBadgeButton" class="creation-button" onclick="createBadge()">
+        <i class="fas fa-plus-circle"></i> Crea badge
+      </button>
+      <h3> Acquista un Badge</h3>
+      <div id="badgeList"></div>
+    </section>
+    
+    <section id="corsi" style="display: none;" class="card-section">
+      <button onclick="createCourse()" id="createCourseButton" class="creation-button" style="display: none;">
+        <i class="fas fa-plus-circle"></i> Crea corso
+      </button>
+      <h3> Acquista un Corso</h3>
+      <div id="courseList"></div>
+    </section>
+    
+    <section id="progetti" style="display: none;" class="card-section">
+      <button onclick="createProject()" id="createProjectButton" class="creation-button" style="display: none;">
+        <i class="fas fa-plus-circle"></i> Crea progetto
+      </button>
+      <h3> Contribuisci a un Progetto</h3>
+      <div id="projectList"></div>
+    </section>
+    
+    <section id="dashboard" style="display: none;" class="card-section">
+      <h3><i class="fas fa-tachometer-alt"></i> La Tua Dashboard</h3>
+      <p id="dashboardStatus">Connetti il wallet per visualizzare la Dashboard.</p>
+      <div id="dashboardContent" class="dashboard-container" style="display: none;">
+        <div class="user-profile-header">
+          <div class="wallet-info">
+            <i class="fas fa-wallet"></i>
+            <span id="dashAddress" class="user-address"></span>
+          </div>
+          <div class="user-level">
+            <span class="level-badge" id="dashLevel"></span>
+          </div>
+        </div>
+
+        <div class="token-balance-card">
+          <div class="balance-group">
+            <h4><i class="fas fa-coins"></i> Saldo ACT</h4>
+            <p id="dashBalance" class="balance-amount"></p>
+          </div>
+          <div class="balance-group">
+            <h4><i class="fas fa-piggy-bank"></i> ACT riscattati</h4>
+            <p id="dashTotalClaimed" class="balance-amount"></p>
+          </div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <i class="fas fa-graduation-cap"></i>
+            <h5>Corsi acquistati</h5>
+            <p id="dashCourses" class="stat-value"></p>
+          </div>
+          <div class="stat-card">
+            <i class="fas fa-award"></i>
+            <h5>Badge</h5>
+            <p id="dashBadges" class="stat-value"></p>
+          </div>
+          <div class="stat-card">
+            <i class="fas fa-hands-helping"></i>
+            <h5>Progetti contribuiti</h5>
+            <p id="dashProjects" class="stat-value"></p>
+          </div>
+        </div>
+
+        <div class="activity-section">
+          <h3><i class="fas fa-exchange-alt"></i> Transazioni</h3>
+          <div class="activity-list" id="dashTransactions"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="attivita" style="display: none;" class="card-section">
+      <h3><i class="fas fa-tasks"></i> Registra una Pratica</h3>
+      <form id="practiceForm" class="styled-form">
+        <div class="form-group">
+          <label for="activityType">Tipo di attività:</label>
+          <select id="activityType" required>
+            <option value="">Seleziona un'attività</option>
+            <option value="composting">Compostaggio</option>
+            <option value="recycling">Riciclaggio</option>
+            <option value="renewableEnergy">Energia rinnovabile</option>
+            <option value="waterSaving">Risparmio idrico</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="quantity" id="activity-quantity">Quantità:</label>
+          <input type="number" id="quantity" value="1" min="1">
+        </div>
+        <div class="form-group token-estimate">
+          <p>
+            <i class="fas fa-coins"></i> Token stimati: 
+            <span id="estimatedTokens" class="token-amount">0</span> ACT
+          </p>
+        </div>
+        <button type="submit" class="submit-btn" id="registerPractice">
+          <i class="fas fa-save"></i> Registra attività
+        </button>
+      </form>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-content">
+    </div>
+  </footer>
+
+  <script>
+
+    const web3 = new Web3(window.ethereum)
+    const contractAddress = "0xb2539d0142ff733f596fea746aced75c304c7307"
+    let contractABI 
+    let ACTContract
+    let accountAddr
+    let ownerAddress
+
+    fetch('ABI.txt')
+      .then(response => response.text())
+      .then(text => {
+        contractABI = text
+        ACTContract = new web3.eth.Contract(JSON.parse(contractABI), contractAddress)
+      })
+      .catch(err => console.error('Errore nel caricamento:', err));
+    
+    function connectWallet() {
+      if(!accountAddr){
+        if (typeof window.ethereum !== 'undefined') {
+          ethereum.request({ method: 'eth_requestAccounts' })
+            .then(accounts => {
+              updateWalletStatus(true, accounts[0]);
+              accountAddr = accounts[0];
+              
+              // Dispatch custom event for other components
+              const event = new CustomEvent('walletConnected', { detail: accounts[0] });
+              document.dispatchEvent(event);
+
+              updateDashboard()
+              displayBadges()
+              displayCourses()
+              displayProjects()
+            })
+            .catch(err => {
+              updateWalletStatus(false);
+              showWalletError(err.message);
+            });
+        } else {
+          updateWalletStatus(false);
+          showWalletError('MetaMask non rilevato. Per favore installalo prima.');
+        }
+      }
+    }
+
+    function updateWalletStatus(connected, address = '') {
+      const indicator = document.getElementById('walletStatusIndicator');
+      const walletAddress = document.getElementById('walletAddress');
+      const walletButtonText = document.getElementById('walletButtonText');
+      
+      if (connected) {
+        indicator.classList.add('connected');
+        walletButtonText.textContent = 'Connesso';
+        walletAddress.textContent = address;
+        //walletAddress.style.display = 'inline';
+        
+        // Change button style when connected
+        document.querySelector('.wallet-btn').classList.add('connected');
+      } else {
+        indicator.classList.remove('connected');
+        walletButtonText.textContent = 'Connetti Wallet';
+        walletAddress.style.display = 'none';
+        document.querySelector('.wallet-btn').classList.remove('connected');
+      }
+    }
+
+    function showWalletError(message) {
+      const errorElement = document.createElement('div');
+      errorElement.className = 'wallet-error';
+      errorElement.innerHTML = `
+        <i class="fas fa-exclamation-circle"></i>
+        <span>${message}</span>
+      `;
+      
+      document.body.appendChild(errorElement);
+      
+      setTimeout(() => {
+        errorElement.classList.add('show');
+      }, 10);
+      
+      setTimeout(() => {
+        errorElement.classList.remove('show');
+        setTimeout(() => {
+          document.body.removeChild(errorElement);
+        }, 300);
+      }, 5000);
+    }
+
+    function showSection(id) {
+      document.querySelectorAll('main section').forEach(sec => sec.style.display = 'none');
+      document.getElementById(id).style.display = 'block';
+      //if (id === "dashboard") updateDashboard();
+      //if(id == "badge") displayBadges()
+      //if(id == "corsi") displayCourses()
+      //if(id == "progetti") displayProjects()
+    }
+
+  </script>
+  <script src="badges.js"></script>
+  <script src="dashboard.js"></script>
+  <script src="buyTokens.js"></script>
+  <script src="courses.js"></script>
+  <script src="projects.js"></script>
+</body>
+</html>

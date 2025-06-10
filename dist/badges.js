@@ -1,0 +1,235 @@
+async function displayBadges() {
+
+    if (!accountAddr) {
+        //TODO
+        return;
+    }
+
+    const badgeCounter = await ACTContract.methods.badgeCounter().call();
+    const badgeList = document.getElementById("badgeList");
+    badgeList.innerHTML = "";
+    ownerAddress = await ACTContract.methods.owner().call();
+    if(ownerAddress.toLowerCase() === accountAddr.toLowerCase())
+        document.getElementById("createBadgeButton").style.display = "block";
+
+    if (badgeCounter > 0 && accountAddr) {
+        const fromBlock = 0;
+        const toBlock = "latest";
+
+        const badges = await ACTContract.getPastEvents("BadgeCreated", { fromBlock, toBlock });
+        const accountBadges = await ACTContract.getPastEvents("badgeRedeemed", {
+        filter: { user: accountAddr },
+        fromBlock, toBlock
+        });
+
+        const redeemedIds = new Set(accountBadges.map(ev => ev.returnValues.badgeId));
+        const availableBadges = badges.filter(ev => !redeemedIds.has(ev.returnValues.badgeId));
+
+        const badgeDetails = await Promise.all(
+        availableBadges.map(ev =>
+            ACTContract.methods.badge(ev.returnValues.badgeId).call()
+        )
+        );
+
+        if (availableBadges.length === 0) {
+        badgeList.innerHTML = `
+            <div class="empty-state">
+            <i class="fas fa-trophy"></i>
+            <p>Hai già ottenuto tutti i badge disponibili!</p>
+            </div>
+        `;
+        return;
+        }
+
+        badgeDetails.forEach((badge, index) => {
+        const badgeId = availableBadges[index].returnValues.badgeId;
+        const card = document.createElement("div");
+        card.className = "card";
+        
+        card.innerHTML = `
+            <div class="card-header" style="background-color: ${getBadgeColor(badge.level)};">
+            <i class="fas fa-award card-icon"></i>
+            <h3 class="card-title">${badge.name}</h3>
+            <span class="card-level">Livello ${badge.level}</span>
+            </div>
+            <div class="card-body">
+            <div class="card-detail">
+                <i class="fas fa-coins"></i>
+                <span>${badge.requiredTokens} ACT richiesti</span>
+            </div>
+            <button class="card-button" onclick="buyBadge(${badgeId})">
+                <i class="fas fa-shopping-cart"></i> Ottieni Badge
+            </button>
+            </div>
+        `;
+
+        badgeList.appendChild(card);
+        });
+    } else {
+        badgeList.innerHTML = `
+        <div class="empty-state">
+            <i class="fas fa-wallet"></i>
+            <p>${accountAddr ? 'Nessun badge disponibile' : 'Connetti il wallet per visualizzare i badge'}</p>
+        </div>
+        `;
+    }
+}
+
+async function buyBadge(badgeId) {
+    try {
+        const fromBlock = 0;
+        const toBlock = "latest";
+        const badge = await ACTContract.methods.badge(badgeId).call();
+        let balance = await ACTContract.methods.balanceOf(accountAddr).call();
+        const badgeEvents = await ACTContract.getPastEvents("badgeRedeemed", {
+            filter: { user: accountAddr },
+            fromBlock, toBlock
+        });
+        let maxLevel = 0;
+        for (let ev of badgeEvents) {
+            const badgeId = ev.returnValues.badgeId;
+            const badge = await ACTContract.methods.badge(badgeId).call();
+            const level = Number(badge.level);
+            if (level > maxLevel) maxLevel = level;
+        }
+        console.log("level ok: ", maxLevel>=Number(badge.level) || maxLevel == Number(badge.level)-1)
+
+        if(balance >= badge.requiredTokens && (maxLevel>badge.level || maxLevel == badge.level-1)){
+            await ACTContract.methods.buyBadge(badgeId).send({
+                from: accountAddr
+            }); 
+            alert(`Hai acquistato il badge ${badge.name}!`);
+            displayBadges(); 
+            updateDashboard()
+        }else alert("Non hai abbastanza ACT o il tuo livello è troppo basso");
+        
+    } catch (err) {
+        alert("Errore durante l'acquisto: " + err.message);
+    }
+}
+
+async function createBadge(){
+    // Create modal container
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.innerHTML = `
+        <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fas fa-award"></i> Nuovo Badge</h3>
+            <button class="close-modal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="badgeForm" class="modal-form">
+            <div class="form-group">
+                <label for="badgeName"><i class="fas fa-tag"></i> Nome Badge</label>
+                <input type="text" id="badgeName" required placeholder="Es: Eco Warrior">
+            </div>
+            
+            <div class="form-group">
+                <label for="badgeDescription"><i class="fas fa-align-left"></i> Descrizione (Opzionale)</label>
+                <textarea id="badgeDescription" rows="3" placeholder="Descrizione del badge..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="badgeLevel"><i class="fas fa-layer-group"></i> Livello</label>
+                <select id="badgeLevel" required>
+                ${Array.from({length: 5}, (_, i) => `<option value="${i+1}">Livello ${i+1}</option>`).join('')}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="badgeTokens"><i class="fas fa-coins"></i> Token Richiesti</label>
+                <input type="number" id="badgeTokens" min="1" required>
+            </div>
+            
+            <div class="form-actions">
+                <button type="button" class="cancel-button">Annulla</button>
+                <button type="submit" class="submit-button">
+                <i class="fas fa-plus-circle"></i> Crea Badge
+                </button>
+            </div>
+            </form>
+        </div>
+        </div>
+    `;
+
+    // Add to DOM
+    document.body.appendChild(modal);
+    
+    // Close modal handlers
+    modal.querySelector('.close-modal').addEventListener('click', () => {
+        document.body.removeChild(modal);
+    });
+    
+    modal.querySelector('.cancel-button').addEventListener('click', () => {
+        document.body.removeChild(modal);
+    });
+    
+    // Form submission
+    modal.querySelector('#badgeForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const name = document.getElementById('badgeName').value;
+        const description = document.getElementById('badgeDescription').value;
+        const level = parseInt(document.getElementById('badgeLevel').value);
+        const requiredTokens = parseInt(document.getElementById('badgeTokens').value);
+        
+        try {
+        // Show loading state
+        const submitBtn = modal.querySelector('.submit-button');
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creazione...';
+        submitBtn.disabled = true;
+        
+        // Call contract method
+        await ACTContract.methods.createBadge(
+            name,
+            description || '', 
+            level,
+            requiredTokens
+        ).send({ from: accountAddr });
+        
+        // Close modal and refresh badge list
+        document.body.removeChild(modal);
+        displayBadges();
+        updateDashboard()
+        
+        // Show success message
+        showToast('Badge creato con successo!', 'success');
+        } catch (error) {
+        console.error('Error creating badge:', error);
+        showToast(`Errore: ${error.message}`, 'error');
+        submitBtn.innerHTML = '<i class="fas fa-plus-circle"></i> Crea Badge';
+        submitBtn.disabled = false;
+        }
+    });
+    }
+
+    // Helper function to show toast messages
+    function showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.classList.add('show');
+    }, 10);
+    
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => {
+        document.body.removeChild(toast);
+        }, 300);
+    }, 5000);
+}
+
+function getBadgeColor(level) {
+  const colors = {
+    1: '#E3F2FD',  // Light blue
+    2: '#BBDEFB',  // Medium blue
+    3: '#90CAF9',  // Stronger blue
+    4: '#64B5F6',  // Blue
+    5: '#42A5F5'   // Darker blue
+  };
+  return colors[level] || '#E3F2FD'; // Default light blue
+}
