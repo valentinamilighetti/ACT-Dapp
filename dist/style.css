@@ -155,12 +155,12 @@ nav button:hover, .wallet-btn:hover {
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background-color: #f44336; /* Red for disconnected */
+  background-color: #f44336; 
   transition: all 0.3s ease;
 }
 
 .status-indicator.connected {
-  background-color: #4CAF50; /* Green for connected */
+  background-color: #4CAF50; 
 }
 
 .status-text {
@@ -171,7 +171,6 @@ nav button:hover, .wallet-btn:hover {
   display: none;
   margin-left: 0.5rem;
   font-family: monospace;
-  /*background-color: rgba(0, 0, 0, 0.1);*/
   padding: 0.25rem 0.5rem;
   border-radius: 4px;
   font-size: 0.8rem;
@@ -182,19 +181,18 @@ nav button:hover, .wallet-btn:hover {
 }
 
 .wallet-container:hover .wallet-address {
-    display: block; /*TODO*/
+    display: block; 
     max-width: none;
     position: absolute;
     right: 0;
     top: 100%;
-    /*background-color: var(--primary-dark);*/
     z-index: 10;
     max-width: 300px;
 }
 
 @media (max-width: 768px) {
   .wallet-address {
-    display: none !important; /* Never show address next to button on mobile */
+    display: none !important; 
   }
   
   .wallet-container:hover .wallet-address {
@@ -434,14 +432,12 @@ footer {
   gap: 1rem;
 }
 
-/* Dashboard Container */
 .dashboard-container {
   padding: 1.5rem;
   max-width: 1300px;
   margin: 0 auto;
 }
 
-/* User Profile Header */
 .user-profile-header {
   display: flex;
   justify-content: space-between;
@@ -451,7 +447,6 @@ footer {
   border-bottom: 1px solid #e0e0e0;
 }
 
-/* Transactions List Container */
 #dashTransactions {
   list-style: none;
   padding: 0;
@@ -460,7 +455,6 @@ footer {
   overflow-y: auto;
 }
 
-/* Activity Item */
 .activity-item {
   padding: 0.75rem 1rem;
   border-bottom: 1px solid #eee;
@@ -476,7 +470,6 @@ footer {
   gap: 0.5rem;
 }
 
-/* Type Row */
 .activity-type {
   display: flex;
   align-items: center;
@@ -497,17 +490,43 @@ footer {
   text-overflow: ellipsis;
 }
 
-/* Meta Row */
 .activity-meta {
   display: flex;
   justify-content: space-between;
   align-items: center;
   font-size: 0.85rem;
-  margin-left: 1.75rem; /* Align with icon */
+  margin-left: 1.75rem; 
 }
 
 .activity-date {
   color: #888;
+}
+
+.stat-tooltip {
+  position: relative;
+  cursor: pointer;
+}
+
+.stat-tooltip::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #333;
+  color: #fff;
+  padding: 6px 8px;
+  border-radius: 4px;
+  white-space: pre-wrap;
+  font-size: 0.9em;
+  display: none;
+  z-index: 10;
+  width: max-content;
+  max-width: 300px;
+}
+
+.stat-tooltip:hover::after {
+  display: block;
 }
 
 .tx-link {
@@ -526,7 +545,6 @@ footer {
   text-decoration: none;
 }
 
-/* Badge List Container */
 #badgeList {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -534,7 +552,6 @@ footer {
   margin-top: 1.5rem;
 }
 
-/* Badge Card */
 .card {
   background: white;
   border-radius: 10px;
@@ -611,7 +628,6 @@ footer {
   transform: translateY(-2px);
 }
 
-/* Creation Button Styles */
 .creation-button {
   display: flex;
   align-items: center;
@@ -645,12 +661,10 @@ footer {
   font-size: 1.1rem;
 }
 
-/* Admin-specific styling (for create buttons) */
 .admin-only .creation-button {
   display: flex !important;
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
   .creation-button {
     max-width: 100%;
@@ -658,7 +672,6 @@ footer {
   }
 }
 
-/* Contribution Modal Specific Styles */
 .contribute-modal {
     max-width: 500px;
     width: 90%;
@@ -702,7 +715,6 @@ footer {
     color: var(--primary-dark);
 }
 
-/* Quantity Control */
 .quantity-control {
     display: flex;
     align-items: center;
@@ -715,7 +727,6 @@ footer {
     text-align: center;
 }
 
-/* Form Actions */
 .form-actions {
     display: flex;
     justify-content: flex-end;
@@ -871,7 +882,6 @@ footer {
   cursor: not-allowed;
 }
 
-/* Toast Messages */
 .toast {
   position: fixed;
   bottom: 20px;
@@ -901,7 +911,6 @@ footer {
   background: #2196F3;
 }
 
-/* Empty State */
 .empty-state {
   text-align: center;
   padding: 2rem;
@@ -919,7 +928,6 @@ footer {
   font-size: 1.1rem;
 }
 
-/* Responsive */
 @media (max-width: 600px) {
   #badgeList {
     grid-template-columns: 1fr;
@@ -949,7 +957,6 @@ footer {
   font-size: 0.9rem;
 }
 
-/* Token Balance Card */
 .token-balance-card {
   background: white;
   border-radius: 10px;
@@ -977,7 +984,6 @@ footer {
   margin: 0;
 }
 
-/* Stats Grid */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -1013,7 +1019,6 @@ footer {
   margin: 0;
 }
 
-/* Activity Section */
 .activity-section {
   background: white;
   border-radius: 10px;
@@ -1064,7 +1069,6 @@ footer {
   color: #888;
 }
 
-/* Responsive */
 @media (max-width: 600px) {
   .token-balance-card {
     flex-direction: column;
@@ -1076,7 +1080,6 @@ footer {
   }
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
   .nav-container {
     flex-direction: column;

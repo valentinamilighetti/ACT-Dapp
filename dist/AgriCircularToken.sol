@@ -162,14 +162,6 @@ contract AgriCircularToken is ERC20, Ownable {
         }
     }
 
-    // Calcola la percentuale di completamento di un progetto
-    function getProjectProgress(uint256 projectId) public view returns (uint256) {
-        EcologicProject memory project = projects[projectId];
-        if (project.requiredTokens == 0) return 0;
-        if (project.totalContributed >= project.requiredTokens) return 100;
-        return (project.totalContributed * 100) / project.requiredTokens;
-    }
-
     // Permette agli utenti di acquistare un badge
     function buyBadge(uint256 badgeId) public {
         CircularityBadge storage badgeToRedeem = badge[badgeId];

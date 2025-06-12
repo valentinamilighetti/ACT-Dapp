@@ -3,7 +3,7 @@ async function updateDashboard() {
     const dashboardContent = document.getElementById("dashboardContent");
 
     if (!accountAddr) {
-        dashboardStatus.innerText = "Connetti il wallet per visualizzare la Dashboard.";
+        dashboardStatus.innerText = "Connect wallet to display the Dashboard.";
         return;
     }
 
@@ -31,14 +31,37 @@ async function updateDashboard() {
         fromBlock, toBlock
     });
     const uniqueCourses = new Set(courseEvents.map(ev => ev.returnValues.courseId));
-    document.getElementById("dashCourses").innerText = uniqueCourses.size;
+
+    const courseNames = await Promise.all(
+        courseEvents.map(async ev => {
+            const course = await ACTContract.methods.courses(ev.returnValues.courseId).call();
+            return course.name;
+        })
+    );
+    document.getElementById("dashCourses").innerHTML = `
+        <span class="stat-tooltip" data-tooltip="${courseNames.join(', ')}">
+            ${uniqueCourses.size}
+        </span>
+    `;
 
     const badgeEvents = await ACTContract.getPastEvents("badgeRedeemed", {
         filter: { user: accountAddr },
         fromBlock, toBlock
     });
     const uniqueBadges = new Set(badgeEvents.map(ev => ev.returnValues.badgeId));
-    document.getElementById("dashBadges").innerText = uniqueBadges.size;
+
+    const badgeNames = await Promise.all(
+        badgeEvents.map(async ev => {
+            const badge = await ACTContract.methods.badge(ev.returnValues.badgeId).call();
+            return badge.name;
+        })
+    );
+    console.log(badgeNames)
+    document.getElementById("dashBadges").innerHTML = `
+        <span class="stat-tooltip" data-tooltip="${badgeNames.join(', ')}">
+            ${uniqueBadges.size}
+        </span>
+    `;
 
     // maximim level of badge => level of the account
     let maxLevel = 0;
@@ -48,20 +71,32 @@ async function updateDashboard() {
         const level = Number(badge.level);
         if (level > maxLevel) maxLevel = level;
     }
-    document.getElementById("dashLevel").innerText = maxLevel > 0 ? `Livello ${maxLevel}` : "Beginner";
+    document.getElementById("dashLevel").innerText = maxLevel > 0 ? `Level ${maxLevel}` : "Beginner";
 
     const projectEvents = await ACTContract.getPastEvents("ProjectCompensated", {
         filter: { user: accountAddr },
         fromBlock, toBlock
     });
     const uniqueProjects = new Set(projectEvents.map(ev => ev.returnValues.projectId));
-    document.getElementById("dashProjects").innerText = uniqueProjects.size;
+    //document.getElementById("dashProjects").innerText = uniqueProjects.size;
+
+    const projectNames = await Promise.all(
+        projectEvents.map(async ev => {
+            const project = await ACTContract.methods.projects(ev.returnValues.projectId).call();
+            return project.name;
+        })
+    );
+    document.getElementById("dashProjects").innerHTML = `
+        <span class="stat-tooltip" data-tooltip="${projectNames.join(', ')}">
+            ${uniqueProjects.size}
+        </span>
+    `;
 
     const allEvents = [
-        ...tokensMinted.map(ev => ({ ...ev, type: "Acquisto di ACT" })),
-        ...courseEvents.map(ev => ({ ...ev, type: "Acquisto di un corso" })),
-        ...badgeEvents.map(ev => ({ ...ev, type: "Acquisto di un bade" })),
-        ...projectEvents.map(ev => ({ ...ev, type: "Contribuzione a un progetto" }))
+        ...tokensMinted.map(ev => ({ ...ev, type: "ACT purchase" })),
+        ...courseEvents.map(ev => ({ ...ev, type: "Course purchase" })),
+        ...badgeEvents.map(ev => ({ ...ev, type: "Bade purchase" })),
+        ...projectEvents.map(ev => ({ ...ev, type: "Project contribution" }))
     ];
     const transactionList = document.getElementById("dashTransactions");
     transactionList.innerHTML = "";

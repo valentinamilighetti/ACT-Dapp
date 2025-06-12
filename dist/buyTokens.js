@@ -32,14 +32,14 @@ practiceForm.onsubmit = async function(e) {
     const tokensToReward = calculateTokenReward(activity, quantity);
 
     if(!accountAddr){
-        alert("Devi prima collegare il wallet");
+        alert("You need to connect the wallet first");
     }else{
         try {       
             const tokenPrice = "0.000125";
             totalPriceEther = (parseFloat(tokenPrice) * tokensToReward).toFixed(18);
             totalPriceWei = web3.utils.toWei(totalPriceEther, "ether");
 
-            registerBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Invio in corso...';
+            registerBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
             registerBtn.disabled = true;
 
             await ACTContract.methods.buyTokens(tokensToReward, activity, quantity)
@@ -48,18 +48,18 @@ practiceForm.onsubmit = async function(e) {
                     value: totalPriceWei
                 })
 
-            alert(`Attività registrata! Riceverai ${tokensToReward} ACT token.`);
+            alert(`Registered activity! You will receive ${tokensToReward} ACT token.`);
 
             practiceForm.reset();
-            registerBtn.innerHTML = '<i class="fas fa-save"></i> Registra attività';
+            registerBtn.innerHTML = '<i class="fas fa-save"></i> Record Activity';
             registerBtn.disabled = false;
             estimatedTokens.textContent = "0";
             quantityInput.value = 1
             updateDashboard()
         } catch (error) {
             console.error("Error:", error);
-            alert("Errore nella registrazione: " + error.message);
-            registerBtn.innerHTML = '<i class="fas fa-save"></i> Registra attività';
+            alert("Error: " + error.message);
+            registerBtn.innerHTML = '<i class="fas fa-save"></i> Record Activity';
             registerBtn.disabled = false;
         }
     }
@@ -68,9 +68,9 @@ practiceForm.onsubmit = async function(e) {
 function calculateTokenReward(activity, quantity) {
     const RATES = {
         composting: 2,       // 2 tokens per kg
-        recycling: 1.5,      // 1.5 tokens per kg
+        plasticSaving: 1.5,      // 1.5 tokens per kg
         renewableEnergy: 10,  // 10 tokens per kWh
-        waterSaving: 5       // 5 tokens per m³
+        waterSaving: 3       // 3 tokens per L
     };
     
     return Math.floor(quantity * (RATES[activity] || 1));
@@ -78,12 +78,12 @@ function calculateTokenReward(activity, quantity) {
 
 function changeMeasureUnit(activity){
     const UNITS = {
-        composting: "(kg)",       // 2 tokens per kg
-        recycling: "(kg)",      // 1.5 tokens per kg
-        renewableEnergy: "(kW)",  // 10 tokens per kWh
+        composting: "(kg)",      
+        plasticSaving: "(kg)",      
+        renewableEnergy: "(kWh)",  
         waterSaving: "(L)"   
     }
 
     let unit = UNITS[activity] || ""
-    document.getElementById("activity-quantity").innerText = "Quantità" + unit + ":"
+    document.getElementById("activity-quantity").innerText = "Quantity" + unit + ":"
 }

@@ -1,18 +1,16 @@
 async function displayBadges() {
 
-    if (!accountAddr) {
-        //TODO
-        return;
-    }
-
     const badgeCounter = await ACTContract.methods.badgeCounter().call();
     const badgeList = document.getElementById("badgeList");
     badgeList.innerHTML = "";
     ownerAddress = await ACTContract.methods.owner().call();
-    if(ownerAddress.toLowerCase() === accountAddr.toLowerCase())
-        document.getElementById("createBadgeButton").style.display = "block";
+
+    if(accountAddr)
+        if(ownerAddress.toLowerCase() === accountAddr.toLowerCase())
+            document.getElementById("createBadgeButton").style.display = "block";
 
     if (badgeCounter > 0 && accountAddr) {
+    
         const fromBlock = 0;
         const toBlock = "latest";
 
@@ -35,43 +33,43 @@ async function displayBadges() {
         badgeList.innerHTML = `
             <div class="empty-state">
             <i class="fas fa-trophy"></i>
-            <p>Hai già ottenuto tutti i badge disponibili!</p>
+            <p>You have already obtained all available badges!</p>
             </div>
         `;
         return;
         }
 
         badgeDetails.forEach((badge, index) => {
-        const badgeId = availableBadges[index].returnValues.badgeId;
-        const card = document.createElement("div");
-        card.className = "card";
-        
-        card.innerHTML = `
-            <div class="card-header" style="background-color: ${getBadgeColor(badge.level)};">
-            <i class="fas fa-award card-icon"></i>
-            <h3 class="card-title">${badge.name}</h3>
-            <span class="card-level">Livello ${badge.level}</span>
-            </div>
-            <div class="card-body">
-            <div class="card-detail">
-                <i class="fas fa-coins"></i>
-                <span>${badge.requiredTokens} ACT richiesti</span>
-            </div>
-            <button class="card-button" onclick="buyBadge(${badgeId})">
-                <i class="fas fa-shopping-cart"></i> Ottieni Badge
-            </button>
-            </div>
-        `;
+            const badgeId = availableBadges[index].returnValues.badgeId;
+            const card = document.createElement("div");
+            card.className = "card";
+            
+            card.innerHTML = `
+                <div class="card-header" style="background-color: ${getBadgeColor(badge.level)};">
+                <i class="fas fa-award card-icon"></i>
+                <h3 class="card-title">${badge.name}</h3>
+                <span class="card-level">Level ${badge.level}</span>
+                </div>
+                <div class="card-body">
+                <div class="card-detail">
+                    <i class="fas fa-coins"></i>
+                    <span>${badge.requiredTokens} ACT required</span>
+                </div>
+                <button class="card-button" onclick="buyBadge(${badgeId})">
+                    <i class="fas fa-shopping-cart"></i> Get Badge
+                </button>
+                </div>
+            `;
 
-        badgeList.appendChild(card);
+            badgeList.appendChild(card);
         });
     } else {
         badgeList.innerHTML = `
-        <div class="empty-state">
-            <i class="fas fa-wallet"></i>
-            <p>${accountAddr ? 'Nessun badge disponibile' : 'Connetti il wallet per visualizzare i badge'}</p>
-        </div>
-        `;
+            <div class="empty-state">
+                <i class="fas fa-wallet"></i>
+                <p>${accountAddr ? 'No badges available' : 'Connect wallet to view badges'}</p>
+            </div>
+            `;
     }
 }
 
@@ -92,19 +90,20 @@ async function buyBadge(badgeId) {
             const level = Number(badge.level);
             if (level > maxLevel) maxLevel = level;
         }
-        console.log("level ok: ", maxLevel>=Number(badge.level) || maxLevel == Number(badge.level)-1)
 
-        if(balance >= badge.requiredTokens && (maxLevel>badge.level || maxLevel == badge.level-1)){
+        badgeLevel =  parseInt(badge.level)
+
+        if(balance >= badge.requiredTokens && (maxLevel>badgeLevel || maxLevel == badgeLevel-1)){
             await ACTContract.methods.buyBadge(badgeId).send({
                 from: accountAddr
             }); 
-            alert(`Hai acquistato il badge ${badge.name}!`);
+            alert(`You purchased the badge ${badge.name}!`);
             displayBadges(); 
             updateDashboard()
-        }else alert("Non hai abbastanza ACT o il tuo livello è troppo basso");
+        }else alert("You don't have enough ACT or your level is too low");
         
     } catch (err) {
-        alert("Errore durante l'acquisto: " + err.message);
+        alert("Error during purchase: " + err.message);
     }
 }
 
@@ -115,37 +114,37 @@ async function createBadge(){
     modal.innerHTML = `
         <div class="modal-content">
         <div class="modal-header">
-            <h3><i class="fas fa-award"></i> Nuovo Badge</h3>
+            <h3><i class="fas fa-award"></i> New Badge</h3>
             <button class="close-modal">&times;</button>
         </div>
         <div class="modal-body">
             <form id="badgeForm" class="modal-form">
             <div class="form-group">
-                <label for="badgeName"><i class="fas fa-tag"></i> Nome Badge</label>
-                <input type="text" id="badgeName" required placeholder="Es: Eco Warrior">
+                <label for="badgeName"><i class="fas fa-tag"></i> Badge name</label>
+                <input type="text" id="badgeName" required>
             </div>
             
             <div class="form-group">
-                <label for="badgeDescription"><i class="fas fa-align-left"></i> Descrizione (Opzionale)</label>
-                <textarea id="badgeDescription" rows="3" placeholder="Descrizione del badge..."></textarea>
+                <label for="badgeDescription"><i class="fas fa-align-left"></i> Description </label>
+                <textarea id="badgeDescription" rows="3"></textarea>
             </div>
             
             <div class="form-group">
-                <label for="badgeLevel"><i class="fas fa-layer-group"></i> Livello</label>
+                <label for="badgeLevel"><i class="fas fa-layer-group"></i> Level</label>
                 <select id="badgeLevel" required>
-                ${Array.from({length: 5}, (_, i) => `<option value="${i+1}">Livello ${i+1}</option>`).join('')}
+                ${Array.from({length: 5}, (_, i) => `<option value="${i+1}">Level ${i+1}</option>`).join('')}
                 </select>
             </div>
             
             <div class="form-group">
-                <label for="badgeTokens"><i class="fas fa-coins"></i> Token Richiesti</label>
+                <label for="badgeTokens"><i class="fas fa-coins"></i> Required token</label>
                 <input type="number" id="badgeTokens" min="1" required>
             </div>
             
             <div class="form-actions">
-                <button type="button" class="cancel-button">Annulla</button>
+                <button type="button" class="cancel-button">Cancel</button>
                 <button type="submit" class="submit-button">
-                <i class="fas fa-plus-circle"></i> Crea Badge
+                <i class="fas fa-plus-circle"></i> Create Badge
                 </button>
             </div>
             </form>
@@ -153,10 +152,8 @@ async function createBadge(){
         </div>
     `;
 
-    // Add to DOM
     document.body.appendChild(modal);
     
-    // Close modal handlers
     modal.querySelector('.close-modal').addEventListener('click', () => {
         document.body.removeChild(modal);
     });
@@ -175,37 +172,32 @@ async function createBadge(){
         const requiredTokens = parseInt(document.getElementById('badgeTokens').value);
         
         try {
-        // Show loading state
-        const submitBtn = modal.querySelector('.submit-button');
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creazione...';
-        submitBtn.disabled = true;
-        
-        // Call contract method
-        await ACTContract.methods.createBadge(
-            name,
-            description || '', 
-            level,
-            requiredTokens
-        ).send({ from: accountAddr });
-        
-        // Close modal and refresh badge list
-        document.body.removeChild(modal);
-        displayBadges();
-        updateDashboard()
-        
-        // Show success message
-        showToast('Badge creato con successo!', 'success');
+            const submitBtn = modal.querySelector('.submit-button');
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
+            submitBtn.disabled = true;
+            
+            await ACTContract.methods.createBadge(
+                name,
+                description || '', 
+                level,
+                requiredTokens
+            ).send({ from: accountAddr });
+            
+            document.body.removeChild(modal);
+            displayBadges();
+            updateDashboard()
+            
+            showToast('Badge created!', 'success');
         } catch (error) {
         console.error('Error creating badge:', error);
-        showToast(`Errore: ${error.message}`, 'error');
-        submitBtn.innerHTML = '<i class="fas fa-plus-circle"></i> Crea Badge';
-        submitBtn.disabled = false;
+            showToast(`Errore: ${error.message}`, 'error');
+            submitBtn.innerHTML = '<i class="fas fa-plus-circle"></i> Create Badge';
+            submitBtn.disabled = false;
         }
     });
-    }
+}
 
-    // Helper function to show toast messages
-    function showToast(message, type = 'info') {
+function showToast(message, type = 'info') {
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
     toast.textContent = message;
