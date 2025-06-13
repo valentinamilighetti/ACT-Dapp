@@ -33,13 +33,13 @@ async function updateDashboard() {
     const uniqueCourses = new Set(courseEvents.map(ev => ev.returnValues.courseId));
 
     const courseNames = await Promise.all(
-        courseEvents.map(async ev => {
-            const course = await ACTContract.methods.courses(ev.returnValues.courseId).call();
+        Array.from(uniqueCourses).map(async id => {
+            const course = await ACTContract.methods.courses(id).call();
             return course.name;
         })
     );
     document.getElementById("dashCourses").innerHTML = `
-        <span class="stat-tooltip" data-tooltip="${courseNames.join(', ')}">
+        <span class="stat-tooltip" data-tooltip="${courseNames.join('\n')}">
             ${uniqueCourses.size}
         </span>
     `;
@@ -51,14 +51,13 @@ async function updateDashboard() {
     const uniqueBadges = new Set(badgeEvents.map(ev => ev.returnValues.badgeId));
 
     const badgeNames = await Promise.all(
-        badgeEvents.map(async ev => {
-            const badge = await ACTContract.methods.badge(ev.returnValues.badgeId).call();
+        Array.from(uniqueBadges).map(async id => {
+            const badge = await ACTContract.methods.badge(id).call();
             return badge.name;
         })
     );
-    console.log(badgeNames)
     document.getElementById("dashBadges").innerHTML = `
-        <span class="stat-tooltip" data-tooltip="${badgeNames.join(', ')}">
+        <span class="stat-tooltip" data-tooltip="${badgeNames.join('\n')}">
             ${uniqueBadges.size}
         </span>
     `;
@@ -78,16 +77,15 @@ async function updateDashboard() {
         fromBlock, toBlock
     });
     const uniqueProjects = new Set(projectEvents.map(ev => ev.returnValues.projectId));
-    //document.getElementById("dashProjects").innerText = uniqueProjects.size;
 
     const projectNames = await Promise.all(
-        projectEvents.map(async ev => {
-            const project = await ACTContract.methods.projects(ev.returnValues.projectId).call();
+        Array.from(uniqueProjects).map(async id => {
+            const project = await ACTContract.methods.projects(id).call();
             return project.name;
         })
     );
     document.getElementById("dashProjects").innerHTML = `
-        <span class="stat-tooltip" data-tooltip="${projectNames.join(', ')}">
+        <span class="stat-tooltip" data-tooltip="${projectNames.join('\n')}">
             ${uniqueProjects.size}
         </span>
     `;
