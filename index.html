@@ -272,6 +272,58 @@
       //if(id == "progetti") displayProjects()
     }
 
+    function showToast(message, type = 'info') {
+   
+      const modal = document.createElement('div');
+      modal.className = 'modal-overlay';
+      modal.style.zIndex = '1000';
+      
+    
+      modal.innerHTML = `
+          <div class="toast-modal ${type}">
+              <div class="toast-modal-content">
+                  <div class="toast-modal-header">
+                      <i class="fas ${getToastIcon(type)}"></i>
+                      <h3>${getToastTitle(type)}</h3>
+                      <button class="toast-modal-close" onclick="this.closest('.modal-overlay').remove()">
+                          &times;
+                      </button>
+                  </div>
+                  <div class="toast-modal-body">
+                      <p>${message}</p>
+                  </div>
+                  <div class="toast-modal-footer">
+                      <button class="toast-modal-button" onclick="this.closest('.modal-overlay').remove()">
+                          OK
+                      </button>
+                  </div>
+              </div>
+          </div>
+      `;
+      
+      document.body.appendChild(modal);
+      
+      function getToastIcon(type) {
+          const icons = {
+              'success': 'fa-check-circle',
+              'error': 'fa-exclamation-circle',
+              'info': 'fa-info-circle',
+              'warning': 'fa-exclamation-triangle'
+          };
+          return icons[type] || 'fa-info-circle';
+      }
+      
+      function getToastTitle(type) {
+          const titles = {
+              'success': 'Success',
+              'error': 'Error',
+              'info': 'Information',
+              'warning': 'Warning'
+          };
+          return titles[type] || 'Notification';
+      }
+  }
+
   </script>
   <script src="badges.js"></script>
   <script src="dashboard.js"></script>

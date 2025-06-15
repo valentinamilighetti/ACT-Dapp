@@ -915,6 +915,136 @@ footer {
   background: #2196F3;
 }
 
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.toast-modal {
+  background: white;
+  padding: 1.5em;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  min-width: 300px;
+  max-width: 90%;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.toast-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.toast-modal-body {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+.toast-modal-footer {
+  text-align: right;
+}
+
+.toast-modal-button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 0.5em 1em;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.toast-modal-button:hover {
+  background-color: #45a049;
+}
+
+.toast-modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5em;
+  line-height: 1;
+  cursor: pointer;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.toast-modal.success {
+    border-color: var(--primary-light);
+}
+
+.toast-modal.error {
+    border-color: #f44336;
+}
+
+.toast-modal.warning {
+    border-color: #ff9800;
+}
+
+.toast-modal.info {
+    border-color: #2196F3;
+}
+
+.toast-modal-content {
+    padding: 1.5rem;
+}
+
+.toast-modal-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.toast-modal-header i {
+    font-size: 1.5rem;
+    margin-right: 0.75rem;
+}
+
+.toast-modal-header h3 {
+    margin: 0;
+    flex-grow: 1;
+}
+
+.toast-modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #888;
+}
+
+.toast-modal-body p {
+    margin: 0;
+    line-height: 1.5;
+}
+
+.toast-modal-footer {
+    margin-top: 1.5rem;
+    text-align: right;
+}
+
+.toast-modal-button {
+    background: var(--primary-light);
+    color: white;
+    border: none;
+    padding: 0.5rem 1.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.toast-modal-button:hover {
+    background: var(--primary-dark);
+}
+
 .empty-state {
   text-align: center;
   padding: 2rem;

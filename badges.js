@@ -93,22 +93,23 @@ async function buyBadge(badgeId) {
 
         badgeLevel =  parseInt(badge.level)
 
-        if(balance >= badge.requiredTokens && (maxLevel>badgeLevel || maxLevel == badgeLevel-1)){
-            await ACTContract.methods.buyBadge(badgeId).send({
-                from: accountAddr
-            }); 
-            alert(`You purchased the badge ${badge.name}!`);
-            displayBadges(); 
-            updateDashboard()
-        }else alert("You don't have enough ACT or your level is too low");
+        if(balance >= badge.requiredTokens){
+            if(maxLevel>badgeLevel || maxLevel == badgeLevel-1){
+                await ACTContract.methods.buyBadge(badgeId).send({
+                    from: accountAddr
+                }); 
+                showToast(`Badge ${badge.name} redeemed!`, 'success');
+                displayBadges(); 
+                updateDashboard()  
+            }else showToast("Your level is too low", "warning");
+        }else showToast("You don't have enough ACT", "warning");
         
     } catch (err) {
-        alert("Error during purchase: " + err.message);
+        showToast("Error during purchase: " + err.message, "error");
     }
 }
 
 async function createBadge(){
-    // Create modal container
     const modal = document.createElement('div');
     modal.className = 'modal-overlay';
     modal.innerHTML = `
@@ -162,7 +163,6 @@ async function createBadge(){
         document.body.removeChild(modal);
     });
     
-    // Form submission
     modal.querySelector('#badgeForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         
@@ -189,30 +189,12 @@ async function createBadge(){
             
             showToast('Badge created!', 'success');
         } catch (error) {
-        console.error('Error creating badge:', error);
+            console.error('Error creating badge:', error);
             showToast(`Errore: ${error.message}`, 'error');
             submitBtn.innerHTML = '<i class="fas fa-plus-circle"></i> Create Badge';
             submitBtn.disabled = false;
         }
     });
-}
-
-function showToast(message, type = 'info') {
-    const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    toast.textContent = message;
-    document.body.appendChild(toast);
-    
-    setTimeout(() => {
-        toast.classList.add('show');
-    }, 10);
-    
-    setTimeout(() => {
-        toast.classList.remove('show');
-        setTimeout(() => {
-        document.body.removeChild(toast);
-        }, 300);
-    }, 5000);
 }
 
 function getBadgeColor(level) {

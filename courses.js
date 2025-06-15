@@ -78,12 +78,12 @@ async function buyCourse(courseId) {
         const balance = await ACTContract.methods.balanceOf(accountAddr).call();
 
         if (balance < course.requiredTokens) {
-            alert("You don't have enough ACT");
+            showToast("You don't have enough ACT", "warning");
             return;
         }
 
         if (course.courseOwner.toLowerCase() === accountAddr.toLowerCase()) {
-            alert("You cannot buy a course that you created.");
+            showToast("You cannot buy a course that you created.", "warning");
             return;
         }
 
@@ -91,12 +91,12 @@ async function buyCourse(courseId) {
             from: accountAddr
         });
 
-        alert(`You have purchased the course ${course.name}!`);
+        showToast(`You have purchased the course ${course.name}!`, "success");
         displayCourses(); 
         updateDashboard();
 
     } catch (err) {
-        alert("Error during purchase: " + err.message);
+        showToast("Error during purchase: " + err.message, "error");
     }
 }
 
@@ -184,23 +184,4 @@ async function createCourse(){
             submitBtn.disabled = false;
         }
     });
-    }
-
-    // Helper function to show toast messages
-    function showToast(message, type = 'info') {
-    const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    toast.textContent = message;
-    document.body.appendChild(toast);
-    
-    setTimeout(() => {
-        toast.classList.add('show');
-    }, 10);
-    
-    setTimeout(() => {
-        toast.classList.remove('show');
-        setTimeout(() => {
-        document.body.removeChild(toast);
-        }, 300);
-    }, 5000);
 }

@@ -32,7 +32,7 @@ practiceForm.onsubmit = async function(e) {
     const tokensToReward = calculateTokenReward(activity, quantity);
 
     if(!accountAddr){
-        alert("You need to connect the wallet first");
+        showToast("You need to connect the wallet first", "warning");
     }else{
         try {       
             const tokenPrice = "0.000125";
@@ -48,7 +48,7 @@ practiceForm.onsubmit = async function(e) {
                     value: totalPriceWei
                 })
 
-            alert(`Registered activity! You will receive ${tokensToReward} ACT token.`);
+            showToast(`Registered activity! You will receive ${tokensToReward} ACT token.`, "success");
 
             practiceForm.reset();
             registerBtn.innerHTML = '<i class="fas fa-save"></i> Record Activity';
@@ -58,7 +58,7 @@ practiceForm.onsubmit = async function(e) {
             updateDashboard()
         } catch (error) {
             console.error("Error:", error);
-            alert("Error: " + error.message);
+            showToast("Error: " + error.message, "error");
             registerBtn.innerHTML = '<i class="fas fa-save"></i> Record Activity';
             registerBtn.disabled = false;
         }
