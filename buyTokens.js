@@ -35,18 +35,16 @@ practiceForm.onsubmit = async function(e) {
         showToast("You need to connect the wallet first", "warning");
     }else{
         try {       
-            const tokenPrice = "0.000125";
-            totalPriceEther = (parseFloat(tokenPrice) * tokensToReward).toFixed(18);
-            totalPriceWei = web3.utils.toWei(totalPriceEther, "ether");
+            const tokenPriceWei = BigInt(web3.utils.toWei("0.000125", "ether")); // 125000000000000n
+            const totalPriceWei = tokenPriceWei * BigInt(tokensToReward);
 
             registerBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
             registerBtn.disabled = true;
 
-            await ACTContract.methods.buyTokens(tokensToReward, activity, quantity)
-                .send({ 
-                    from: accountAddr,
-                    value: totalPriceWei
-                })
+            await ACTContract.methods.buyTokens(tokensToReward, activity, quantity).send({
+                from: accountAddr,
+                value: totalPriceWei.toString()
+            });
 
             showToast(`Registered activity! You will receive ${tokensToReward} ACT token.`, "success");
 

@@ -101,7 +101,6 @@ async function buyCourse(courseId) {
 }
 
 async function createCourse(){
-    // Create modal container
     const modal = document.createElement('div');
     modal.className = 'modal-overlay';
     modal.innerHTML = `

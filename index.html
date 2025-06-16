@@ -175,7 +175,7 @@
   <script>
 
     const web3 = new Web3(window.ethereum)
-    const contractAddress = "0x8b0ada39fc5484c8d186b6d0c69978a5ccfd8ad5"
+    const contractAddress = "0x60de02ac7406d6b718697c5ee2f37cdc8fd59eac"
     let contractABI 
     let ACTContract
     let accountAddr
@@ -186,9 +186,6 @@
       .then(text => {
         contractABI = text
         ACTContract = new web3.eth.Contract(JSON.parse(contractABI), contractAddress)
-        displayBadges()
-        displayCourses()
-        displayProjects()
       })
       .catch(err => console.error('Loading error:', err));
     
@@ -199,8 +196,6 @@
             .then(accounts => {
               updateWalletStatus(true, accounts[0]);
               accountAddr = accounts[0];
-              
-              // Dispatch custom event for other components
               const event = new CustomEvent('walletConnected', { detail: accounts[0] });
               document.dispatchEvent(event);
 
@@ -229,7 +224,6 @@
         indicator.classList.add('connected');
         walletButtonText.textContent = 'Connected';
         walletAddress.textContent = address;
-        //walletAddress.style.display = 'inline';
         
         // Change button style when connected
         document.querySelector('.wallet-btn').classList.add('connected');
@@ -266,10 +260,6 @@
     function showSection(id) {
       document.querySelectorAll('main section').forEach(sec => sec.style.display = 'none');
       document.getElementById(id).style.display = 'block';
-      //if (id === "dashboard") updateDashboard();
-      //if(id == "badge") displayBadges()
-      //if(id == "corsi") displayCourses()
-      //if(id == "progetti") displayProjects()
     }
 
     function showToast(message, type = 'info') {
@@ -277,7 +267,6 @@
       const modal = document.createElement('div');
       modal.className = 'modal-overlay';
       modal.style.zIndex = '1000';
-      
     
       modal.innerHTML = `
           <div class="toast-modal ${type}">

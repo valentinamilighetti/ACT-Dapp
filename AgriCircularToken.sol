@@ -12,25 +12,25 @@ contract AgriCircularToken is ERC20, Ownable {
         string description;         // Descrizione del progetto
         string location;            // Posizione del progetto
         uint256 requiredTokens;     // Numero di token necessari per completare il progetto
-        bool active;                // Stato dell'attività (attivo/riscattato o completato)
+        bool active;                // Stato del progetto (attivo o completato)
         uint256 totalContributed;   // Totale dei token già contribuiti
         address projectOwner;       // Indirizzo del creatore del progetto
     }
 
     // Struttura che definisce un corso sulla circolarità
     struct Course {
-        string name;                // Nome del progetto
-        string description;         // Descrizione del progetto
-        string promoter;            // Promotore del progetto
+        string name;                // Nome del corso
+        string description;         // Descrizione del corso
+        string promoter;            // Promotore del corso
         uint256 requiredTokens;     // Numero di token necessari per acquistare il corso
         address courseOwner;        // Indirizzo del creatore del corso
     }
 
     // Struttura che definisce un badge 
     struct CircularityBadge {
-        string name;                // Nome del progetto
-        string description;         // Descrizione del progetto
-        uint256 level;              // livello di importanza 
+        string name;                // Nome del badge
+        string description;         // Descrizione del badge
+        uint256 level;              // livello crescente di importanza
         uint256 requiredTokens;     // Numero di token necessari per acquistare il badge
     }
 
@@ -117,7 +117,7 @@ contract AgriCircularToken is ERC20, Ownable {
         emit BadgeCreated(badgeCounter, name);
     } 
 
-    // Funzione per creare un nuovo corso (pubblica)
+    // Funzione per creare un nuovo corso 
     function createCourse(
         string memory name,
         string memory description,
@@ -135,7 +135,7 @@ contract AgriCircularToken is ERC20, Ownable {
         emit CourseCreated(courseCounter, name);
     }
 
-    // Permette agli utenti di contribuire a un progetto spendendo token
+    // funzione per contribuire token a un progetto
     function compensateProject(uint256 projectId, uint256 tokenAmount) public {
         require(projectId > 0 && projectId <= projectCounter, "Invalid project ID");
         require(projects[projectId].active, "Project not active");
@@ -162,7 +162,7 @@ contract AgriCircularToken is ERC20, Ownable {
         }
     }
 
-    // Permette agli utenti di acquistare un badge
+    // funzione per acquistare un badge
     function buyBadge(uint256 badgeId) public {
         CircularityBadge storage badgeToRedeem = badge[badgeId];
 
@@ -180,7 +180,7 @@ contract AgriCircularToken is ERC20, Ownable {
         emit badgeRedeemed(badgeId, msg.sender);
     }
 
-    // Permette agli utenti di acquistare un corso
+    // funzione per acquistare un corso
     function buyCourse(uint256 courseId) public {
         Course storage course = courses[courseId];
 

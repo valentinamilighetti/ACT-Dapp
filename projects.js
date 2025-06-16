@@ -87,7 +87,6 @@ async function openContributeModal(projectId) {
         return
     }
 
-    // Create modal elements
     const modal = document.createElement('div');
     modal.className = 'modal-overlay';
     modal.id = 'contributeModal';
@@ -184,7 +183,6 @@ async function openContributeModal(projectId) {
 }
 
 async function createProject(){
-    // Create modal container
     const modal = document.createElement('div');
     modal.className = 'modal-overlay';
     modal.innerHTML = `
