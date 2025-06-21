@@ -15,7 +15,7 @@ L'applicazione consente agli utenti di accumulare token registrando attività so
 
 È possibile accedere alla DApp direttamente dal seguente link:
 
-🔗 [https://valentinamilighetti.github.io/ACT-Dapp-DSB/](https://valentinamilighetti.github.io/ACT-Dapp/)
+🔗 [https://valentinamilighetti.github.io/ACT-Dapp/](https://valentinamilighetti.github.io/ACT-Dapp/)
 
 ---
 
@@ -34,4 +34,4 @@ Apri il browser su http://localhost:8080
 
 
 ## N.B 
-Per tutti i dettagli visualizza il documento di progetto [ACT_Dapp_documento.pdf](./ACT_Dapp_documento.pdf)
+Per tutti i dettagli visualizza il documento di progetto [Valentina_Milighetti_DSBC.pdf](./Valentina_Milighetti_DSBC.pdf)
