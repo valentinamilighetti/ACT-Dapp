@@ -13,15 +13,15 @@ L'applicazione consente agli utenti di accumulare token registrando attività so
 
 ### - Modalità online
 
-Puoi accedere alla DApp direttamente dal seguente link:
+È possibile accedere alla DApp direttamente dal seguente link:
 
-🔗 [https://valentinamilighetti.github.io/ACT-Dapp-DSB/](https://valentinamilighetti.github.io/ACT-Dapp-DSB/)
+🔗 [https://valentinamilighetti.github.io/ACT-Dapp-DSB/](https://valentinamilighetti.github.io/ACT-Dapp/)
 
 ---
 
 ### - Modalità locale
 
-Se preferisci eseguire il progetto localmente:
+Per eseguire il progetto localmente:
 
 1. Assicurati di avere installato [Node.js](https://nodejs.org/)
 2. Apri il terminale nella cartella del progetto
@@ -29,7 +29,9 @@ Se preferisci eseguire il progetto localmente:
 
 ```bash
 npx http-server
+```
 Apri il browser su http://localhost:8080
 
 
-## N.B Per tutti i dettagli visualizza il documento di progetto [ACT_Dapp_documento.pdf](./ACT_Dapp_documento.pdf)
+## N.B 
+Per tutti i dettagli visualizza il documento di progetto [ACT_Dapp_documento.pdf](./ACT_Dapp_documento.pdf)
