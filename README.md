@@ -30,7 +30,7 @@ Per eseguire il progetto localmente:
 ```bash
 npx http-server
 ```
-Apri il browser su http://localhost:8080
+4. Apri il browser su http://localhost:8080
 
 
 ## N.B 
